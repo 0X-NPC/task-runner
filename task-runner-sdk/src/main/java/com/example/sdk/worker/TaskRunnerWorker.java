@@ -1,8 +1,8 @@
 package com.example.sdk.worker;
 
 import com.example.sdk.core.codec.NettyDecoder;
-import com.example.sdk.core.codec.NettyEncoder;
 import com.example.sdk.core.codec.SerializerType;
+import com.example.sdk.core.codec.ZeroCopyNettyEncoder;
 import com.example.sdk.core.command.CommandType;
 import com.example.sdk.core.command.RemotingCommand;
 import io.netty.bootstrap.Bootstrap;
@@ -20,12 +20,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Task Puller Worker 核心实现
+ * Task Runner Worker 核心实现
  *
  * @author 0xNPC
  */
 @Slf4j
-public class TaskPullerWorker {
+public class TaskRunnerWorker {
 
     private final String serverHost;
     private final int serverPort;
@@ -50,7 +50,7 @@ public class TaskPullerWorker {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private final CountDownLatch waitLatch = new CountDownLatch(1);
 
-    public TaskPullerWorker(String serverHost, int serverPort, String workerId, TaskExecutor taskExecutor) {
+    public TaskRunnerWorker(String serverHost, int serverPort, String workerId, TaskExecutor taskExecutor) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
         this.workerId = workerId;
@@ -110,7 +110,7 @@ public class TaskPullerWorker {
                         ch.pipeline()
                                 .addLast(new IdleStateHandler(0, 10, 0))
                                 .addLast(new NettyDecoder())
-                                .addLast(new NettyEncoder())
+                                .addLast(new ZeroCopyNettyEncoder())
                                 .addLast(new ClientHandler());
                     }
                 });

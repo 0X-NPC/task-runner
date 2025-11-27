@@ -1,9 +1,9 @@
 package com.example.sdk.server;
 
-import com.example.sdk.core.TaskPuller;
+import com.example.sdk.core.TaskRunner;
 import com.example.sdk.core.codec.NettyDecoder;
-import com.example.sdk.core.codec.NettyEncoder;
 import com.example.sdk.core.codec.SerializerType;
+import com.example.sdk.core.codec.ZeroCopyNettyEncoder;
 import com.example.sdk.core.command.CommandType;
 import com.example.sdk.core.command.RemotingCommand;
 import io.netty.bootstrap.ServerBootstrap;
@@ -20,12 +20,12 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Task Puller Server 核心实现
+ * Task Runner Server 核心实现
  *
  * @author 0xNPC
  */
 @Slf4j
-public class TaskPullerServer {
+public class TaskRunnerServer {
 
     private final int port;
     private final TaskProvider taskProvider;
@@ -49,7 +49,7 @@ public class TaskPullerServer {
     private volatile boolean isStopping = false;
     private final CountDownLatch waitLatch = new CountDownLatch(1);
 
-    public TaskPullerServer(int port, TaskProvider taskProvider, TaskResultListener resultListener) {
+    public TaskRunnerServer(int port, TaskProvider taskProvider, TaskResultListener resultListener) {
         this.port = port;
         this.taskProvider = taskProvider;
         this.resultListener = resultListener;
@@ -124,7 +124,7 @@ public class TaskPullerServer {
                         ch.pipeline()
                                 .addLast(new IdleStateHandler(30, 0, 0))
                                 .addLast(new NettyDecoder())
-                                .addLast(new NettyEncoder())
+                                .addLast(new ZeroCopyNettyEncoder())
                                 .addLast(new ServerHandler());
                     }
                 });
@@ -221,7 +221,7 @@ public class TaskPullerServer {
 
         private void handlePullAsync(ChannelHandlerContext ctx, RemotingCommand msg) {
             // 核心逻辑：借用 Pull 机会注册 Worker Channel
-            String workerId = TaskPuller.decodeBody(msg, String.class);
+            String workerId = TaskRunner.decodeBody(msg, String.class);
             if (workerId != null) {
                 workerChannelMap.put(workerId, ctx.channel());
             }

@@ -2,10 +2,10 @@ package com.example.demo;
 
 import com.example.demo.model.DemoTask;
 import com.example.demo.model.DemoTaskResult;
-import com.example.sdk.core.TaskPuller;
+import com.example.sdk.core.TaskRunner;
 import com.example.sdk.core.codec.SerializerType;
 import com.example.sdk.core.command.RemotingCommand;
-import com.example.sdk.server.TaskPullerServer;
+import com.example.sdk.server.TaskRunnerServer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Queue;
@@ -24,7 +24,7 @@ public class DemoServer {
         }
 
         // 2. 创建 Server
-        TaskPullerServer server = new TaskPullerServer(8888,
+        TaskRunnerServer server = new TaskRunnerServer(8888,
                 // [Pull模式] TaskProvider: 响应 Worker 的拉取请求
                 (workerId) -> CompletableFuture.supplyAsync(() -> {
                     // 模拟查库耗时
@@ -42,7 +42,7 @@ public class DemoServer {
 
                 // [Pull模式] ResultListener: 处理任务结果
                 (resultCmd) -> {
-                    DemoTaskResult result = TaskPuller.decodeBody(resultCmd, DemoTaskResult.class);
+                    DemoTaskResult result = TaskRunner.decodeBody(resultCmd, DemoTaskResult.class);
                     if (result != null) {
                         log.debug("[Result] ID={}, Success={}", result.taskId(), result.success());
                     }
@@ -80,7 +80,7 @@ public class DemoServer {
                         long cost = System.currentTimeMillis() - start;
 
                         // 解析响应
-                        String respStr = TaskPuller.decodeBody(response, String.class);
+                        String respStr = TaskRunner.decodeBody(response, String.class);
                         log.info("<<< [Push] Received response from {}: {} | cost: {} ms", targetWorker, respStr, cost);
 
                     } catch (Exception e) {

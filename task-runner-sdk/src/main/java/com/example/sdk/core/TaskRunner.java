@@ -11,7 +11,7 @@ import static com.example.sdk.core.Constants.PROTO_SERIALIZER;
  *
  * @author 0xNPC
  */
-public class TaskPuller {
+public class TaskRunner {
 
     /**
      * 辅助方法：从命令中提取对象，支持 JSON 和 Protostuff

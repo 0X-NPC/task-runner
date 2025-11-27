@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 /**
  * 业务数据模型-任务结果
  *
- * @author zhiwu.zzw
+ * @author 0xNPC
  */
 @Data
 @Accessors(fluent = true)

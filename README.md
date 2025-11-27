@@ -31,7 +31,7 @@
 Server 端既是任务生产者（Pull），也是指令发起者（Push）。
 ```java
 // 1. 创建 Server
-TaskPullerServer server = new TaskPullerServer(8888,
+TaskRunnerServer server = new TaskRunnerServer(8888,
     // [Pull] 异步返回任务
     (workerId) -> CompletableFuture.supplyAsync(() -> taskQueue.poll()),
     // [Result] 监听汇报
@@ -55,7 +55,7 @@ RemotingCommand response = server.sendSync(
 Worker 端既是任务执行者，也可处理控制指令。
 ```java
 // 1. 创建 Worker
-TaskPullerWorker worker = new TaskPullerWorker("127.0.0.1", 8888, "Worker-001",
+TaskRunnerWorker worker = new TaskRunnerWorker("127.0.0.1", 8888, "Worker-001",
     // [Pull] 执行核心任务
     (taskBytes) -> {
         // ... 业务逻辑 ...
