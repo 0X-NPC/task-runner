@@ -6,11 +6,10 @@ import com.example.sdk.core.codec.SerializerType;
 import com.example.sdk.core.codec.ZeroCopyNettyEncoder;
 import com.example.sdk.core.command.CommandType;
 import com.example.sdk.core.command.RemotingCommand;
+import com.example.sdk.core.util.ServerBootstrapFactory;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -107,15 +106,18 @@ public class TaskRunnerServer {
      * 说明：适用于嵌入式集成场景，比如当SDK被集成到Spring Boot或其他应用容器中时
      */
     public void start() {
-        if (!isRunning.compareAndSet(false, true)) return;
+        if (!isRunning.compareAndSet(false, true)) {
+            return;
+        }
         Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "Server-Shutdown-Hook"));
 
-        bossGroup = new NioEventLoopGroup(1);
-        workerGroup = new NioEventLoopGroup();
+        bossGroup = ServerBootstrapFactory.newEventLoopGroup(1, "Server-Boss");
+        workerGroup = ServerBootstrapFactory.newEventLoopGroup(0, "Server-Worker");
 
         ServerBootstrap b = new ServerBootstrap();
         b.group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
+                // 自动切换选择NIO或Epoll
+                .channel(ServerBootstrapFactory.getServerSocketChannelClass())
                 .option(ChannelOption.SO_BACKLOG, 1024)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {

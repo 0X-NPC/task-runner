@@ -19,7 +19,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <netty.version>4.1.101.Final</netty.version>
+        <netty.version>4.2.7.Final</netty.version>
         <protostuff.version>1.8.0</protostuff.version>
         <slf4j.version>2.0.7</slf4j.version>
         <lombok.version>1.18.30</lombok.version>

@@ -5,11 +5,10 @@ import com.example.sdk.core.codec.SerializerType;
 import com.example.sdk.core.codec.ZeroCopyNettyEncoder;
 import com.example.sdk.core.command.CommandType;
 import com.example.sdk.core.command.RemotingCommand;
+import com.example.sdk.core.util.ServerBootstrapFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -80,7 +79,7 @@ public class TaskRunnerWorker {
     public void start() {
         if (isRunning.compareAndSet(false, true)) {
             Runtime.getRuntime().addShutdownHook(new Thread(this::stop, "Worker-Shutdown"));
-            group = new NioEventLoopGroup();
+            group = ServerBootstrapFactory.newEventLoopGroup(0, "Worker-Group");
             doConnect(0);
             startPullLoop();
         }
@@ -102,7 +101,8 @@ public class TaskRunnerWorker {
         if (!isRunning.get()) return;
 
         Bootstrap b = new Bootstrap();
-        b.group(group).channel(NioSocketChannel.class)
+        b.group(group)
+                .channel(ServerBootstrapFactory.getSocketChannelClass())
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

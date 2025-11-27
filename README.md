@@ -13,7 +13,7 @@
 - JSON (Jackson)：通用文本序列化，便于调试与运维，适合控制指令。
 
 ## 3. Netty 高性能底座
-- 基于 Netty 4.x NIO 与 Reactor 多线程模型。
+- 基于 Netty 4.x NIO 与 Reactor 多线程模型，支持Linux环境使用Epoll。
 - 零拷贝 (Zero-Copy)：编解码层直接操作 ByteBuf，减少内存拷贝。
 - 全链路异步 I/O：业务处理返回 CompletableFuture，杜绝阻塞 Netty I/O 线程。
 

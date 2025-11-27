@@ -21,7 +21,12 @@
         <!-- Netty -->
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
+            <artifactId>netty-handler</artifactId>
+            <version>${netty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-transport-classes-epoll</artifactId>
             <version>${netty.version}</version>
         </dependency>
 
@@ -64,5 +69,35 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+
+    <profiles>
+        <!-- Profile: Linux Epoll特性支持 -->
+        <profile>
+            <id>linux-native</id>
+            <activation>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+            <dependencies>
+                <!-- x86_64 支持 -->
+                <dependency>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-transport-native-epoll</artifactId>
+                    <version>${netty.version}</version>
+                    <classifier>linux-x86_64</classifier>
+                </dependency>
+                <!-- ARM64 支持 (如 鲲鹏) -->
+                <dependency>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-transport-native-epoll</artifactId>
+                    <version>${netty.version}</version>
+                    <classifier>linux-aarch_64</classifier>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+
 
 </project>
